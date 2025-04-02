@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, date
 import requests
 
 # API base URL
-API_URL = "http://localhost:8000"
+API_URL = "http://localhost:8888"  # Updated to the new port
 
 # Set page config
 st.set_page_config(page_title="Expense Tracker", page_icon="💰", layout="wide")
@@ -21,20 +21,34 @@ def format_currency(value):
 
 # Function to fetch data from API
 def fetch_expenses():
-    response = requests.get(f"{API_URL}/expenses/")
-    if response.status_code == 200:
-        return response.json()
-    else:
-        st.error(f"Error fetching expenses: {response.text}")
+    try:
+        response = requests.get(f"{API_URL}/expenses/", timeout=10)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            st.error(f"Error fetching expenses: {response.text}")
+            return []
+    except requests.exceptions.ConnectionError:
+        st.error(f"Cannot connect to the backend server at {API_URL}. Please make sure it's running.")
+        return []
+    except Exception as e:
+        st.error(f"Unexpected error: {str(e)}")
         return []
 
 # Function to fetch category summary
 def fetch_category_summary():
-    response = requests.get(f"{API_URL}/expenses/summary/categories")
-    if response.status_code == 200:
-        return response.json()
-    else:
-        st.error(f"Error fetching category summary: {response.text}")
+    try:
+        response = requests.get(f"{API_URL}/expenses/summary/categories", timeout=10)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            st.error(f"Error fetching category summary: {response.text}")
+            return []
+    except requests.exceptions.ConnectionError:
+        st.error(f"Cannot connect to the backend server at {API_URL}. Please make sure it's running.")
+        return []
+    except Exception as e:
+        st.error(f"Unexpected error: {str(e)}")
         return []
 
 # Function to fetch period summary
@@ -47,31 +61,52 @@ def fetch_period_summary(period=None, start_date=None, end_date=None):
     if end_date:
         params["end_date"] = end_date.strftime("%Y-%m-%d")
     
-    response = requests.get(f"{API_URL}/expenses/summary/period", params=params)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        st.error(f"Error fetching period summary: {response.text}")
+    try:
+        response = requests.get(f"{API_URL}/expenses/summary/period", params=params, timeout=10)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            st.error(f"Error fetching period summary: {response.text}")
+            return None
+    except requests.exceptions.ConnectionError:
+        st.error(f"Cannot connect to the backend server at {API_URL}. Please make sure it's running.")
+        return None
+    except Exception as e:
+        st.error(f"Unexpected error: {str(e)}")
         return None
 
 # Function to add an expense
 def add_expense(expense_data):
-    response = requests.post(f"{API_URL}/expenses/", json=expense_data)
-    if response.status_code == 201:
-        st.success("Expense added successfully!")
-        return response.json()
-    else:
-        st.error(f"Error adding expense: {response.text}")
+    try:
+        response = requests.post(f"{API_URL}/expenses/", json=expense_data, timeout=10)
+        if response.status_code == 201:
+            st.success("Expense added successfully!")
+            return response.json()
+        else:
+            st.error(f"Error adding expense: {response.text}")
+            return None
+    except requests.exceptions.ConnectionError:
+        st.error(f"Cannot connect to the backend server at {API_URL}. Please make sure it's running.")
+        return None
+    except Exception as e:
+        st.error(f"Unexpected error: {str(e)}")
         return None
 
 # Function to delete an expense
 def delete_expense(expense_id):
-    response = requests.delete(f"{API_URL}/expenses/{expense_id}")
-    if response.status_code == 204:
-        st.success("Expense deleted successfully!")
-        return True
-    else:
-        st.error(f"Error deleting expense: {response.text}")
+    try:
+        response = requests.delete(f"{API_URL}/expenses/{expense_id}", timeout=10)
+        if response.status_code == 204:
+            st.success("Expense deleted successfully!")
+            return True
+        else:
+            st.error(f"Error deleting expense: {response.text}")
+            return False
+    except requests.exceptions.ConnectionError:
+        st.error(f"Cannot connect to the backend server at {API_URL}. Please make sure it's running.")
+        return False
+    except Exception as e:
+        st.error(f"Unexpected error: {str(e)}")
         return False
 
 # Create tabs
@@ -303,10 +338,12 @@ if st.sidebar.button("Export to CSV"):
 
 # Show API status
 try:
-    response = requests.get(f"{API_URL}/")
+    response = requests.get(f"{API_URL}/", timeout=5)
     if response.status_code == 200:
         st.sidebar.success("✅ API is running")
     else:
         st.sidebar.error("❌ API is not responding correctly")
 except requests.exceptions.ConnectionError:
     st.sidebar.error("❌ API is not running. Start the backend server.")
+except Exception as e:
+    st.sidebar.error(f"Error checking API status: {str(e)}")
