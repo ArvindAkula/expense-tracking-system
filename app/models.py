@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date as date_type, datetime
 from enum import Enum
 from typing import Dict, List, Optional, Union
 from pydantic import BaseModel, Field
@@ -24,7 +24,7 @@ class Expense(BaseModel):
     amount: float = Field(gt=0, description="Expense amount")
     category: str = Field(description="Expense category")
     description: Optional[str] = Field(default=None, description="Expense description")
-    date: Optional[date] = Field(default_factory=date.today, description="Expense date")
+    date: Optional[date_type] = Field(default_factory=date_type.today, description="Expense date")
     created_at: datetime = Field(default_factory=datetime.now, description="Record creation timestamp")
 
 
@@ -33,7 +33,7 @@ class ExpenseCreate(BaseModel):
     amount: float = Field(gt=0, description="Expense amount")
     category: str = Field(description="Expense category")
     description: Optional[str] = Field(default=None, description="Expense description")
-    date: Optional[date] = Field(default=None, description="Expense date")
+    date: Optional[date_type] = Field(default=None, description="Expense date")
 
 
 class ExpenseUpdate(BaseModel):
@@ -41,7 +41,7 @@ class ExpenseUpdate(BaseModel):
     amount: Optional[float] = Field(default=None, gt=0, description="Expense amount")
     category: Optional[str] = Field(default=None, description="Expense category")
     description: Optional[str] = Field(default=None, description="Expense description")
-    date: Optional[date] = Field(default=None, description="Expense date")
+    date: Optional[date_type] = Field(default=None, description="Expense date")
 
 
 class ExpenseSummary(BaseModel):
@@ -53,8 +53,8 @@ class ExpenseSummary(BaseModel):
 
 class PeriodSummary(BaseModel):
     """Model for expense summary over a period."""
-    start_date: date
-    end_date: date
+    start_date: date_type
+    end_date: date_type
     total_amount: float
     total_expenses: int
     category_breakdown: Dict[str, float]
