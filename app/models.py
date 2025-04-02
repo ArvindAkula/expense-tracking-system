@@ -21,27 +21,27 @@ class ExpenseCategory(str, Enum):
 class Expense(BaseModel):
     """Model for an expense record."""
     id: Optional[str] = Field(default_factory=lambda: str(uuid4()))
-    amount: float = Field(..., gt=0, description="Expense amount")
-    category: str = Field(..., description="Expense category")
-    description: Optional[str] = Field(None, description="Expense description")
+    amount: float = Field(gt=0, description="Expense amount")
+    category: str = Field(description="Expense category")
+    description: Optional[str] = Field(default=None, description="Expense description")
     date: Optional[date] = Field(default_factory=date.today, description="Expense date")
     created_at: datetime = Field(default_factory=datetime.now, description="Record creation timestamp")
 
 
 class ExpenseCreate(BaseModel):
     """Model for creating a new expense."""
-    amount: float = Field(..., gt=0, description="Expense amount")
-    category: str = Field(..., description="Expense category")
-    description: Optional[str] = Field(None, description="Expense description")
-    date: Optional[date] = Field(None, description="Expense date")
+    amount: float = Field(gt=0, description="Expense amount")
+    category: str = Field(description="Expense category")
+    description: Optional[str] = Field(default=None, description="Expense description")
+    date: Optional[date] = Field(default=None, description="Expense date")
 
 
 class ExpenseUpdate(BaseModel):
     """Model for updating an existing expense."""
-    amount: Optional[float] = Field(None, gt=0, description="Expense amount")
-    category: Optional[str] = Field(None, description="Expense category")
-    description: Optional[str] = Field(None, description="Expense description")
-    date: Optional[date] = Field(None, description="Expense date")
+    amount: Optional[float] = Field(default=None, gt=0, description="Expense amount")
+    category: Optional[str] = Field(default=None, description="Expense category")
+    description: Optional[str] = Field(default=None, description="Expense description")
+    date: Optional[date] = Field(default=None, description="Expense date")
 
 
 class ExpenseSummary(BaseModel):
