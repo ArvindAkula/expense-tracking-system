@@ -40,7 +40,7 @@ class InMemoryDatabase:
             return None
         
         # Update the expense with new data while preserving the ID
-        updated_expense = expense_data.copy(update={"id": expense_id})
+        updated_expense = expense_data.model_copy(update={"id": expense_id})
         self.expenses[expense_id] = updated_expense
         return updated_expense
     
