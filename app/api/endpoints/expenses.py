@@ -77,8 +77,8 @@ async def update_expense(
         raise HTTPException(status_code=404, detail="Expense not found")
     
     # Update only the provided fields
-    update_data = expense_data.dict(exclude_unset=True)
-    updated_expense = existing_expense.copy(update=update_data)
+    update_data = expense_data.model_dump(exclude_unset=True)
+    updated_expense = existing_expense.model_copy(update=update_data)
     
     # Save the updated expense
     result = database.update_expense(expense_id, updated_expense)
